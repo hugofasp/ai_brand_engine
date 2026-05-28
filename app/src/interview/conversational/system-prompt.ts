@@ -230,12 +230,14 @@ REQUIRED:
 
 OPTIONAL:
 - q7_2 (structured list, 0-60 items) — finished example outputs, each with channel + segment + register + situation + mode + prompt + pillars_invoked + output + why_it_works + common_traps_avoided
+- q7_final.notes (long text, 0-2000 chars) — open closing question. ASK THIS LAST, after q7_1 and any q7_2 work, as the VERY FINAL beat of the interview before you summarise. Phrase it conversationally: "Before we wrap, is there anything we didn't ask that you think we should know? Edge cases, founder context, things any AI should be careful about, anything that makes the brand more accurately YOU." If the user says no / "you got it" / similar, leave the field empty and move to wrap-up. If they share something, capture it verbatim via update_fields. Do NOT prompt with examples that put words in their mouth.
 
 # COMPLETION RULE
 
 The interview is "complete" when:
 - All REQUIRED fields in phases 1-5 are filled
 - q7_1 is set (even if "skip_for_now")
+- q7_final has been ASKED (the user got the chance to add closing context, even if they declined)
 - mark_phase_complete has been called for each of phases 1-5 at minimum
 
 When the user is ready to wrap up but fields are still empty, surface the gaps explicitly: "Three things I still need from you to ship a complete brand pack: [field labels in plain English]."

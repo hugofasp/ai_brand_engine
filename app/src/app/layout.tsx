@@ -3,6 +3,7 @@ import { fraunces, inter, jetbrainsMono } from "@/lib/fonts";
 import { TopNav } from "@/components/chrome/top-nav";
 import { Footer } from "@/components/chrome/footer";
 import { TailoredByBadge } from "@/components/brand/tailored-by-badge";
+import { BlinkingFavicon } from "@/components/brand/blinking-favicon";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -60,6 +61,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <TailoredByBadge />
+        <BlinkingFavicon />
       </body>
     </html>
   );
