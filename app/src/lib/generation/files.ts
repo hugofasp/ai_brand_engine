@@ -183,11 +183,13 @@ ${localeIsPrimary ? `This is the brand's primary locale. Use the answers verbati
 - Structural distinctions
 - What the brand is not
 - Structural outcomes
+- Founder notes (ONLY include this section if q7_final.notes is non-empty; otherwise omit entirely, including the heading)
 
 # How to fill each section
 - **Distillation**: 50-100 words. If \`q1_11.${locale}\` exists, use it verbatim. Otherwise translate \`q1_11.${ctx.brand.locale_primary}\` into ${locale.toUpperCase()} naturally.
 - **Brand identity**: 80-150 words of prose synthesizing q1_1 + q1_3. Connected sentences, not key/value. Named entities verbatim, descriptive prose in ${locale.toUpperCase()}.
 - **Organization**: 40-80 words from \`q1_org\`. One sentence on company shape (size band, founded year if present, HQ / locations). One sentence on which teams own brand-facing content. Plain English in ${locale.toUpperCase()}, never just a key/value dump. If brand-content owners are not stated, omit that sentence entirely rather than guessing. This section sets the register for everything Claude / ChatGPT / Gemini will write downstream: a solo founder reads differently from a 200-person platform with a Marketing team.
+- **Founder notes** (CONDITIONAL): If \`q7_final.notes\` is empty or whitespace, OMIT this section entirely (no heading, nothing). If it has content, render the user's note verbatim under a brief 1-sentence framing line like "Additional context provided by the brand owner:" in ${locale.toUpperCase()}. Translate the framing line if the file is in a secondary locale; do NOT translate the note itself (it's a direct quote from the founder).
 - **How the brand resolves it**: 40-80 words. Lead with q1_5.resolution.
 - **Value chain**: numbered list of q1_6_stages. Translate each stage label naturally into ${locale.toUpperCase()} if needed. Then a 30-50 word paragraph weaving q1_6_effects.
 - **Category**: 30-60 words. q1_7.category + bulleted q1_7_axes.
@@ -281,9 +283,28 @@ Produce only the file body in ${locale.toUpperCase()}. Markdown.`;
       `Not experience-language. Observable, measurable, or contractually defendable.`,
       ``,
       bullets(q1_10),
+      ...renderFounderNotes(a),
     ].join("\n");
   },
 };
+
+/**
+ * Optional "Founder notes" tail for BRAND CORE. Returns an empty array
+ * when q7_final.notes is missing or whitespace, so the section is
+ * cleanly omitted (no heading, no blank scaffold). Renders the user's
+ * note verbatim under a brief framing line.
+ */
+function renderFounderNotes(answers: Record<string, unknown>): string[] {
+  const q7_final = (q(answers, 7, "q7_final") as Record<string, unknown>) ?? {};
+  const notes = typeof q7_final.notes === "string" ? q7_final.notes.trim() : "";
+  if (!notes) return [];
+  return [
+    section("Founder notes"),
+    "Additional context provided by the brand owner. Treat as authoritative when generating content or evaluating proposals:",
+    "",
+    notes,
+  ];
+}
 
 const AUDIENCE: BrandPackFile = {
   name: "11_AUDIENCE_[LOCALE].txt",

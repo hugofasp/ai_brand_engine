@@ -124,4 +124,27 @@ export const PHASE_7_QUESTIONS: Question[] = [
       },
     ],
   },
+
+  {
+    id: "q7_final",
+    phase: 7,
+    position: 3,
+    type: "long_text",
+    optional: true,
+    prompt:
+      "Before we wrap, is there anything we didn't ask that you think we should know? Edge cases, history, founder context, audience nuances, things you'd want any AI to be careful about. Anything that makes your brand more accurately YOU.",
+    why:
+      "Frameworks have boundaries. A free-form closing field lets the user surface the one or two specific things that don't fit any structured question but matter for downstream output. Surfaced in BRAND CORE as 'Founder notes' so any LLM consuming the pack reads it as authoritative context.",
+    orientative:
+      "Optional. Skip if you've covered everything. If you do answer, be specific: 'we don't talk about competitor X by name in any output' or 'our founding story is in 2017, not 2015 (a common error in press)'. Avoid generic encouragement; concrete edge cases pay off most.",
+    tags: ["final", "open", "context"],
+    field: {
+      key: "notes",
+      label: "Founder notes",
+      placeholder:
+        "Anything we didn't ask that any AI consuming your brand pack should know",
+      maxLength: 2000,
+      required: false,
+    },
+  },
 ];
