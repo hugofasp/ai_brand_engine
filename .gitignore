@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+*.swp
+*.swo
+
+# Editor
+.vscode/
+.idea/
+
+# Vercel
+.vercel
+
+# Claude / agent harness
+.claude/local-*
+.claude/sessions/
+
+# Local env (per-package .gitignore handles app/.env.local already)
+.env
+.env.local
+.env.*.local
+
+# Build artefacts (top-level, in case anything lands here)
+node_modules/
+dist/
+build/

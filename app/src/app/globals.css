@@ -1,0 +1,438 @@
+@import "tailwindcss";
+
+/*
+ * brand.soul OS, design tokens.
+ *
+ * Terminal aesthetic on a white canvas. The platform reads as a
+ * developer / agency tool: dense, technical, monospaced. Color is
+ * used sparingly as a state signal: green for active / success,
+ * orange for kinetic / call to action, red for destructive / error.
+ *
+ * The palette intentionally pulls from CRT-terminal / IDE syntax
+ * highlighting so the platform feels like an instrument, not a
+ * marketing site. The agency reference (nineyards.pt) anchors the
+ * page in a confident-monochrome base; the terminal accents are the
+ * digital evolution of that anchor.
+ */
+
+@theme {
+  /* Backgrounds — terminal paper white */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f5;
+  --color-bg-tertiary: #ebebeb;
+
+  /* Text — near-black + grays */
+  --color-text-primary: #0a0a0a;
+  --color-text-secondary: #4a4a4a;
+  --color-text-muted: #888888;
+  --color-text-attribution: #b0b0b0;
+
+  /* Borders */
+  --color-border-subtle: #e0e0e0;
+  --color-border-strong: #b0b0b0;
+  --color-border-emphasis: #0a0a0a;
+
+  /* Interactive — inversion (black CTA on white) */
+  --color-cta-bg: #0a0a0a;
+  --color-cta-text: #ffffff;
+
+  /* Terminal accents — state signals, never background fills.
+   *  Green:   active / success / "system ready"
+   *  Orange:  kinetic / cursor / draw attention
+   *  Red:     destructive / error
+   *  Blue:    link or cross-reference (used very sparingly)
+   *  Purple:  dual role.
+   *           (a) Brand identity: static sigil + ".soul" suffix + product
+   *               tag eyebrows + "> brand.soul" signatures.
+   *           (b) Interaction state: hover/active fill on all buttons,
+   *               and hover colour on text links. Mobile/touch uses :active
+   *               so tapping triggers the same fill.
+   *           Purple-strong is the hover state for surfaces that are
+   *           already purple at rest (e.g. the Generate button). */
+  --color-accent-green: #16a34a;
+  --color-accent-green-soft: #dcfce7;
+  --color-accent-orange: #ea580c;
+  --color-accent-orange-soft: #ffedd5;
+  --color-accent-red: #dc2626;
+  --color-accent-red-soft: #fee2e2;
+  --color-accent-blue: #2563eb;
+  --color-accent-purple: #8b5cf6;
+  --color-accent-purple-strong: #7c3aed;
+  --color-accent-purple-soft: #ede9fe;
+
+  /* Font families. System-native stack across the board — no custom
+   * web font loads. Display (titles) is the OS monospace; sans is the
+   * OS sans-serif; mono is the same monospace as display but exposed
+   * separately so future divergence is cheap. Lowercase is applied at
+   * the component level for display titles to match the wordmark rule.
+   */
+  --font-display: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  /* Backwards-compatible alias — old `font-serif` usages map to display
+   * so we can migrate them gradually without breaking the page. New
+   * code should use `font-display` directly. */
+  --font-serif: var(--font-display);
+
+  /* Type scale */
+  --text-display-xl: 64px;
+  --text-display-xl--line-height: 1.05;
+  --text-display-xl--letter-spacing: -0.025em;
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 1.1;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-md: 36px;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.015em;
+  --text-display-sm: 28px;
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--letter-spacing: -0.005em;
+
+  --text-heading-lg: 24px;
+  --text-heading-lg--line-height: 1.3;
+  --text-heading-lg--letter-spacing: -0.005em;
+  --text-heading-md: 20px;
+  --text-heading-md--line-height: 1.35;
+  --text-heading-md--letter-spacing: 0em;
+  --text-heading-sm: 16px;
+  --text-heading-sm--line-height: 1.4;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.55;
+  --text-body-sm--letter-spacing: 0.005em;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.02em;
+
+  --text-mono: 14px;
+  --text-mono--line-height: 1.5;
+
+  /* Radii — terminal sharpness, smaller corners */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  /* Shadows — light theme, subtle */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-soft: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Base */
+html {
+  background: var(--color-bg-primary);
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Focus ring — 2px primary, 2px offset */
+:focus-visible {
+  outline: 2px solid var(--color-border-emphasis);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip-to-content */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-cta-bg);
+  color: var(--color-cta-text);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+}
+.skip-to-content:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* Selection — terminal green */
+::selection {
+  background: var(--color-accent-green);
+  color: var(--color-bg-primary);
+}
+
+/* Terminal-cursor utility — a blinking block for prompt lines.
+ * Use as <span className="terminal-cursor" /> next to a prompt label. */
+.terminal-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.1em;
+  background: var(--color-text-primary);
+  vertical-align: -0.12em;
+  animation: terminal-blink 1.1s steps(1) infinite;
+}
+
+/* Same blink, used on any inline glyph (e.g. the `>` prefix in the
+ * wordmark). Renders as inline-block so it can be animated cleanly
+ * without affecting the surrounding text layout. */
+.terminal-prompt-blink {
+  display: inline-block;
+  animation: terminal-blink 1.1s steps(1) infinite;
+}
+
+@keyframes terminal-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Terminal-prompt utility — a leading "$" or ">" with muted color. */
+.terminal-prompt::before {
+  content: "$ ";
+  color: var(--color-accent-green);
+  font-family: var(--font-mono);
+}
+
+/* Tailored-by nineyards badge — fixed floating attribution.
+ * Glass-morphism on a translucent white background; sits cleanly on
+ * any surface beneath it. Mounted once at the root layout so it shows
+ * on every route. */
+.tailored-by-badge {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+  opacity: 0.85;
+  transition: opacity 150ms ease;
+  text-decoration: none;
+}
+.tailored-by-badge:hover,
+.tailored-by-badge:focus-visible {
+  opacity: 1;
+}
+.tailored-by-badge__label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: 1;
+  white-space: nowrap;
+}
+.tailored-by-badge__sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+.tailored-by-badge__logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+@media (max-width: 640px) {
+  .tailored-by-badge {
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px 6px 10px;
+    gap: 8px;
+  }
+  .tailored-by-badge__label {
+    font-size: 8px;
+  }
+}
+
+/* Hero atom background — three orbiting electrons behind the H1.
+ * Positioned absolute inside the hero section. The colour electrons
+ * mirror the three coloured words in the headline. */
+.hero-atom {
+  position: absolute;
+  top: 50%;
+  right: -160px;
+  transform: translateY(-50%);
+  width: 1100px;
+  height: 1100px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+.hero-atom svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.hero-atom__orbit {
+  transform-origin: 200px 200px;
+  transform-box: view-box;
+}
+.hero-atom__orbit--1 {
+  animation: hero-atom-spin-1 22s linear infinite;
+}
+.hero-atom__orbit--2 {
+  animation: hero-atom-spin-2 16s linear infinite;
+}
+.hero-atom__orbit--3 {
+  animation: hero-atom-spin-3 19s linear infinite;
+}
+.hero-atom__orbit--4 {
+  animation: hero-atom-spin-4 13s linear infinite;
+}
+.hero-atom__nucleus {
+  transform-origin: 200px 200px;
+  transform-box: view-box;
+  animation: hero-atom-nucleus-pulse 3.8s ease-in-out infinite;
+}
+@keyframes hero-atom-spin-1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes hero-atom-spin-2 {
+  from { transform: rotate(60deg); }
+  to { transform: rotate(-300deg); }
+}
+@keyframes hero-atom-spin-3 {
+  from { transform: rotate(120deg); }
+  to { transform: rotate(480deg); }
+}
+@keyframes hero-atom-spin-4 {
+  from { transform: rotate(90deg); }
+  to { transform: rotate(-270deg); }
+}
+@keyframes hero-atom-nucleus-pulse {
+  0%, 100% { transform: scale(1); }
+  50%     { transform: scale(1.06); }
+}
+/* Nebula layers: each circle breathes on its own cadence with its own
+ * scale amplitude so the cloud never looks like a single ball pulsing
+ * in lockstep. Centres of pulse are slightly different so the visual
+ * weight shifts around the centre, the way a real nebula drifts. */
+.hero-atom__nebula {
+  transform-origin: 200px 200px;
+  transform-box: view-box;
+}
+.hero-atom__nebula--outer {
+  animation: hero-atom-nebula-outer 7.5s ease-in-out infinite;
+}
+.hero-atom__nebula--mid {
+  animation: hero-atom-nebula-mid 5.2s ease-in-out 0.4s infinite;
+}
+.hero-atom__nebula--wisp {
+  animation: hero-atom-nebula-wisp 6.8s ease-in-out 1.2s infinite;
+}
+.hero-atom__nebula--core {
+  animation: hero-atom-nebula-core 3.1s ease-in-out infinite;
+}
+@keyframes hero-atom-nebula-outer {
+  0%, 100% { opacity: 0.55; transform: scale(1);    }
+  50%      { opacity: 1;    transform: scale(1.18); }
+}
+@keyframes hero-atom-nebula-mid {
+  0%, 100% { opacity: 0.7;  transform: scale(0.95) translate(0, 0); }
+  50%      { opacity: 1;    transform: scale(1.12) translate(-4px, 2px); }
+}
+@keyframes hero-atom-nebula-wisp {
+  0%, 100% { opacity: 0.45; transform: scale(1)    translate(0, 0); }
+  50%      { opacity: 0.85; transform: scale(1.25) translate(5px, -3px); }
+}
+@keyframes hero-atom-nebula-core {
+  0%, 100% { opacity: 0.85; transform: scale(0.9);  }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+
+/* Electron nebulae: each electron is a small layered cloud (wisp +
+ * core) that breathes opacity and scale on its own cadence. The
+ * `transform-origin: center` + `transform-box: fill-box` lets each
+ * <circle> scale around its own centre even though it lives inside
+ * a rotating orbit group. The orbit's rotation handles position;
+ * these animations handle the "alive" feel. */
+.hero-atom__electron,
+.hero-atom__electron-core {
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.hero-atom__electron--1 {
+  animation: hero-atom-electron-wisp 4.2s ease-in-out 0s infinite;
+}
+.hero-atom__electron--2 {
+  animation: hero-atom-electron-wisp 3.5s ease-in-out 0.6s infinite;
+}
+.hero-atom__electron--3 {
+  animation: hero-atom-electron-wisp 4.8s ease-in-out 1.3s infinite;
+}
+.hero-atom__electron--4 {
+  animation: hero-atom-electron-wisp 3.9s ease-in-out 2.1s infinite;
+}
+.hero-atom__electron-core--1 {
+  animation: hero-atom-electron-core 2.1s ease-in-out 0s infinite;
+}
+.hero-atom__electron-core--2 {
+  animation: hero-atom-electron-core 1.7s ease-in-out 0.3s infinite;
+}
+.hero-atom__electron-core--3 {
+  animation: hero-atom-electron-core 2.4s ease-in-out 0.9s infinite;
+}
+.hero-atom__electron-core--4 {
+  animation: hero-atom-electron-core 1.9s ease-in-out 1.5s infinite;
+}
+@keyframes hero-atom-electron-wisp {
+  0%, 100% { opacity: 0.55; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.25); }
+}
+@keyframes hero-atom-electron-core {
+  0%, 100% { opacity: 0.8; transform: scale(0.9);  }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+@media (max-width: 768px) {
+  .hero-atom {
+    width: 560px;
+    height: 560px;
+    right: -120px;
+    opacity: 0.4;
+  }
+}

@@ -1,0 +1,895 @@
+# AI Brand Engine — Interview Framework Specification
+
+Snapshot of the structured-form interview's question definitions.
+Generated from src/interview/questions/phase[1-7].ts.
+
+Generated at: 2026-05-27T09:15:19.253Z
+Total questions: 42
+Phases: 7
+
+---
+
+## Purpose
+
+This file is the single source of truth for what every completed
+interview must produce. The conversational UI (post DN-003) is
+responsible for filling out every required field listed below,
+regardless of how the conversation flows.
+
+Use this file to:
+- Validate that a completed interview has filled every required field
+- Reference field shapes when prompting Claude for the next conversational beat
+- Compare future framework versions against this v1 baseline
+
+Output mapping: each phase maps to one or more .txt files in the
+final brand DNA file pack:
+
+- Phase 1 (Foundation) → 10_BRAND_CORE.txt
+- Phase 2 (Audience) → 11_AUDIENCE.txt
+- Phase 3 (Pillars) → 12_PILLARS.txt
+- Phase 4 (Voice) → 20_VOICE_CORE.txt + 21_VOICE_FLEX_[LOCALE].txt
+- Phase 5 (Lexicon) → 22_LEXICON_[LOCALE].txt
+- Phase 6 (Channel specs) → 30_CHANNEL_SPECS_[LOCALE].txt
+- Phase 7 (Examples) → 31_EXAMPLES_LIBRARY_[LOCALE].txt
+
+---
+
+## Phase 1 — Foundation
+
+Populates 10_BRAND_CORE.txt.
+Questions in this phase: 14
+
+### Q1.1 — What's the brand called, and in which language(s) does it operate?
+Type: multi_field_group
+Tags: foundation, locale_config, mandatory
+Extractable: yes
+Extraction hint: From the website/materials, extract the brand's display name. For locale_primary, ALWAYS prioritize the language the actual page content is written in over the domain TLD. A `.pt` domain with English-only copy is `en`, not `pt`. A `.com` site in Portuguese is `pt`. Read the actua…
+
+Prompt:
+  What's the brand called, and in which language(s) does it operate?
+
+Why this matters:
+  Anchors every other answer. Drives file naming, locale-specific files, and the system check output.
+
+Orientative (guidance for the user):
+  Primary language is what you operate in most. Other supported languages should be added only if you'll actually create content in them — not aspirationally. Each additional language doubles roughly four files of work.
+
+Fields:
+  - brand_name ("Brand name") · required · max 120 chars
+  - locale_primary ("Primary language") · required · max 2 chars
+  - locale_secondary ("Secondary languages (comma-separated, ISO codes; optional)") · max 30 chars
+
+---
+
+### Q1.2 — Do any of your channels always operate in a specific language, regardless of who…
+Type: channel_locale_defaults
+Optional: yes
+Tags: foundation, locale_config, optional
+Conditional (showWhen) — only shown given prior answers
+
+Prompt:
+  Do any of your channels always operate in a specific language, regardless of who's writing them?
+
+Why this matters:
+  Some brands have stable per-channel locale patterns (e.g., Portuguese brand whose LinkedIn is always in English). Without this, the system infers locale from the staff member's prompt language, which can be wrong.
+
+Orientative (guidance for the user):
+  If you don't have hard rules here, leave them as 'follows prompt' — the system handles it via inference. Only set channel defaults when you really mean 'this channel is always in language X'.
+
+Per-channel locale: 'follows_prompt' or specific locale code
+  Channels: INSTAGRAM, LINKEDIN, EMAIL, INVESTOR_MEMO, TECHNICAL_DOC, WEB_HERO, PRESS_RELEASE, INTERNAL_MEMO
+
+---
+
+### Q1.3 — Describe what your brand actually is, structurally. We're not looking for market…
+Type: multi_field_group
+Tags: foundation, entity, mandatory, mechanism_test
+Extractable: yes
+Extraction hint: From the materials, extract structural facts about the company: type (e.g., 'Housing Production Platform', 'Brand Consultancy', 'SaaS Platform'), structure (e.g., 'Vertically Integrated', 'Studio', 'Agency'), focus (the specific area/product/service), region (where they operate),…
+
+Prompt:
+  Describe what your brand actually is, structurally. We're not looking for marketing language — we want the operational truth. What type of organization is it? How is it structured? What does it focus on? Where does it operate? What's its specialization?
+
+Why this matters:
+  The brand's "physical" definition — what it does in the world, not how it presents itself. Used for off-domain detection and as the substrate for proposal evaluation in ANALYTICAL_MODE.
+
+Orientative (guidance for the user):
+  Avoid 'we're a leader in...' or 'we specialize in delivering...'. Aim for the kind of definition you'd put in a regulatory filing or a wikipedia infobox. Concrete, structural, factual.
+
+Fields:
+  - name ("Name") · required · max 120 chars
+  - type ("Type") · required · max 120 chars
+  - structure ("Structure") · required · max 120 chars
+  - focus ("Focus") · required · max 120 chars
+  - region ("Region") · required · max 120 chars
+  - specialization ("Specialization") · required · max 200 chars
+Reject phrases: leader in, specialist in delivering, innovative, cutting-edge, best-in-class
+
+---
+
+### Q1.4 — What problem does your brand exist to solve, and what specifically causes that p…
+Type: multi_field_group
+Tags: foundation, thesis, mandatory, mechanism_test
+
+Prompt:
+  What problem does your brand exist to solve, and what specifically causes that problem? We want the mechanisms — the specific reasons the problem exists — not the symptoms.
+
+Why this matters:
+  The thesis is the brand's central argument. It drives every pillar, every contradiction, every analytical-mode response.
+
+Orientative (guidance for the user):
+  Most brands get this wrong by stating the problem as a feeling ('housing is unaffordable'). We want mechanisms. Not 'housing is expensive' but 'housing is expensive because production is fragmented, design is non-standardized, and intermediary margins stack.' Each cause should be something you could point to in the world.
+
+Fields:
+  - problem ("Problem (one sentence)") · required · max 200 chars
+
+---
+
+### Q1.4B — List the specific causes of that problem. Each should be a mechanism — something…
+Type: list_input
+Tags: foundation, thesis, mandatory, mechanism_test
+
+Prompt:
+  List the specific causes of that problem. Each should be a mechanism — something concrete that happens — not a symptom.
+
+Why this matters:
+  The mechanisms behind the problem are what your brand's resolution actually addresses. They drive Q1.5 and ripple into every pillar.
+
+Orientative (guidance for the user):
+  Not 'housing is expensive' but 'housing is expensive because production is fragmented, design is non-standardized, and intermediary margins stack.' 3–5 items.
+
+List: 3–5 items, each ≤ 120 chars
+
+---
+
+### Q1.5 — How does your brand resolve that problem? Not 'we make it better' — what's the s…
+Type: short_text
+Tags: foundation, thesis, mandatory, mechanism_test
+
+Prompt:
+  How does your brand resolve that problem? Not 'we make it better' — what's the specific approach? What does your brand do that addresses each of the causes you just named?
+
+Why this matters:
+  The resolution is the bridge from problem to brand. It tells the system what the brand's intervention is.
+
+Orientative (guidance for the user):
+  If the causes were specific mechanisms, the resolution should be specific mechanisms too. A short formula works ('Industrialize + Integrate + Standardize'). A vague aspiration doesn't ('We make housing better').
+
+Field: resolution (label: "Resolution")
+  max 200 chars
+
+---
+
+### Q1.6_STAGES — Walk through your value chain — the stages of how you create and deliver value, …
+Type: list_input
+Tags: foundation, value_chain, mandatory
+
+Prompt:
+  Walk through your value chain — the stages of how you create and deliver value, from earliest input to final delivery.
+
+Why this matters:
+  The value chain is the brand's structural advantage. It's also what makes the brand non-generic — competitors can copy positioning, but they can't easily copy a different value chain shape.
+
+Orientative (guidance for the user):
+  Each stage should be something concrete that happens. Order matters — list them in sequence from earliest input to final delivery.
+
+List: 3–8 items, each ≤ 100 chars
+
+---
+
+### Q1.6_EFFECTS — Now: what's the cumulative effect of organizing those stages this particular way…
+Type: list_input
+Tags: foundation, value_chain, mandatory
+
+Prompt:
+  Now: what's the cumulative effect of organizing those stages this particular way? List 2–5 effects.
+
+Why this matters:
+  The effect of the value chain shape is what makes it structurally advantageous — and what competitors can't easily replicate.
+
+Orientative (guidance for the user):
+  Each effect should be measurable or observable — not 'we deliver excellence' but 'margins are reduced because there are fewer intermediaries.'
+
+List: 2–5 items, each ≤ 100 chars
+
+---
+
+### Q1.7 — What category does your brand operate in — the broad space, not the specific nic…
+Type: multi_field_group
+Tags: foundation, positioning, mandatory
+Extractable: yes
+Extraction hint: Extract the broad category the brand operates in (e.g., 'Residential Real Estate', 'Brand Strategy Consultancy', 'B2B SaaS'). Pull from how the brand describes itself in headlines or About copy, not from marketing taglines.
+
+Prompt:
+  What category does your brand operate in — the broad space, not the specific niche? And what dimensions matter in that category — what are people choosing between when they pick a brand here?
+
+Why this matters:
+  Positioning is where the brand sits relative to competitors. The dimensions define the choice space.
+
+Orientative (guidance for the user):
+  Category is the supermarket aisle. Axes are the variables on the back of the box. Avoid 'premium' or 'innovative' as axes — those describe how you market, not what you do.
+
+Fields:
+  - category ("Category") · required · max 100 chars
+
+---
+
+### Q1.7_AXES — List 2–5 axes that matter in your category — the dimensions people weigh when pi…
+Type: list_input
+Tags: foundation, positioning, mandatory
+
+Prompt:
+  List 2–5 axes that matter in your category — the dimensions people weigh when picking a brand here.
+
+Why this matters:
+  Axes define the decision space. They shape how proposals are evaluated and how your brand is positioned against alternatives.
+
+Orientative (guidance for the user):
+  Concrete dimensions like 'price per unit', 'delivery time', 'customization range'. Not 'quality' or 'innovation'.
+
+List: 2–5 items, each ≤ 80 chars
+
+---
+
+### Q1.8 — List 3–5 specific things your brand does that competitors structurally cannot. N…
+Type: list_input
+Tags: foundation, differentiation, mandatory, competitor_test
+
+Prompt:
+  List 3–5 specific things your brand does that competitors structurally cannot. Not 'we do it better' — what can you literally do that they can't, and why?
+
+Why this matters:
+  Differentiation is the moat. Structural claims hold up; surface-level claims evaporate.
+
+Orientative (guidance for the user):
+  If a competitor could write the same sentence about themselves, drop it. Differentiation only counts if it's structurally true for you and structurally not true for them.
+
+List: 3–5 items, each ≤ 120 chars
+
+---
+
+### Q1.9 — What is your brand NOT? Name 3–5 things you might be mistaken for, that you're e…
+Type: list_input
+Tags: foundation, negative_definition, mandatory, boundary_check
+
+Prompt:
+  What is your brand NOT? Name 3–5 things you might be mistaken for, that you're explicitly not. This is often more powerful than what you are.
+
+Why this matters:
+  Negative definition is what the brand refuses to be. Used as a hard boundary check on proposals and content.
+
+Orientative (guidance for the user):
+  If you describe yourself as 'a housing platform', you might be mistaken for a traditional developer, an architecture firm, or a contractor. Naming these explicitly — 'not a traditional developer, not an architecture-only firm, not a contractor-only entity' — locks the boundaries.
+
+List: 3–5 items, each ≤ 80 chars
+  Format hint: Format: 'not a/an X'
+
+---
+
+### Q1.10 — What 3–5 outcomes does your brand actually produce for customers? Not the experi…
+Type: list_input
+Tags: foundation, outcomes, mandatory, mechanism_test
+Extractable: yes
+Extraction hint: Extract 3-5 concrete, observable outcomes the brand claims to produce for customers. Look for results-language in About / value-prop / case-study pages. Favor structural outcomes ('faster delivery', 'lower per-unit cost') over experience-language ('great service'). If the materia…
+
+Prompt:
+  What 3–5 outcomes does your brand actually produce for customers? Not the experience — the outcomes.
+
+Why this matters:
+  Outcomes are the brand's promise expressed as observable results.
+
+Orientative (guidance for the user):
+  An outcome is something the customer ends up with that's measurably different. 'Faster delivery' (vs what they'd have otherwise) is an outcome. 'A great experience' is not.
+
+List: 3–5 items, each ≤ 60 chars
+
+---
+
+### Q1.11 — Now distill all of the above into one paragraph: what is this brand and what doe…
+Type: per_locale_long_text
+Tags: foundation, short_definition, mandatory, per_locale, no_translation
+
+Prompt:
+  Now distill all of the above into one paragraph: what is this brand and what does it do? Write this in your primary locale first. Then, if you have other supported locales, write it natively in each one — not translated.
+
+Why this matters:
+  The most-quoted single piece of content in the entire system. Powers off-domain templates, "what is this brand" answers, elevator pitch. Must be natively written per locale — translation kills brand character.
+
+Orientative (guidance for the user):
+  If you struggle to write this without using 'innovative', 'leading', 'comprehensive', or 'cutting-edge', go back to Q1.4–Q1.9 and pull from the mechanisms you named there. The good short definition reads like a structural fact, not a marketing line.
+
+Per-locale long text. Field key: short_definition.
+  min 50 words per locale
+  max 100 words per locale
+
+---
+
+
+## Phase 2 — Audience
+
+Populates 11_AUDIENCE.txt.
+Questions in this phase: 6
+
+### Q2.1 — What's the structural condition that defines your audience? We're not asking dem…
+Type: multi_field_group
+Tags: audience, framing, mandatory, mechanism_test
+
+Prompt:
+  What's the structural condition that defines your audience? We're not asking demographics — we're asking what shared position puts someone in your audience. For example: 'exposure to inefficient housing production and fragmented financing' is a structural condition. 'Millennials' is not.
+
+Why this matters:
+  Meta-definition that segments inherit from. Anchors every segment to a shared structural truth.
+
+Orientative (guidance for the user):
+  Demographics don't survive analysis — people in the same demographic make different choices for different reasons. Structural conditions do survive — they predict behavior. Aim for what's structurally true about your audience.
+
+Fields:
+  - primary_insight ("Primary insight (one sentence)") · required · max 200 chars
+  - consequence ("Consequence (one sentence)") · required · max 200 chars
+
+---
+
+### Q2.2 — How many distinct audience segments do you serve? Then, which one is the most ce…
+Type: segment_setup
+Tags: audience, segments, mandatory
+
+Prompt:
+  How many distinct audience segments do you serve? Then, which one is the most central — the one that defines the rest? That becomes your primary segment (the default when a prompt doesn't specify).
+
+Why this matters:
+  Number of segments shapes the rest of Phase 2. Primary segment is the fallback for everything.
+
+Orientative (guidance for the user):
+  Typical range: 2–4 segments. Fewer than 2 = probably under-segmented. More than 4 = probably over-segmented. If you're not sure, start with 2–3.
+
+Segment setup: 1–6 segments. Captures segment_count + segments[] + primary_segment_id.
+
+---
+
+### Q2.3 — Now describe each segment in detail. Use the tabs above to switch between segmen…
+Type: segment_loop
+Tags: audience, segment, per_segment
+
+Prompt:
+  Now describe each segment in detail. Use the tabs above to switch between segments — fill out all sections for each one.
+
+Why this matters:
+  Per-segment depth is what makes the audience model usable. Each segment becomes its own selector in the file pack — when a prompt mentions a trigger phrase, the system knows which segment's drivers to weight.
+
+Orientative (guidance for the user):
+  Work through one segment at a time. Triggers should be natural ways someone would phrase a prompt about that segment. Drivers and non-drivers are equally important — knowing what your audience does NOT optimize for prevents your team's content from missing the mark.
+
+Segment loop: reads segments from q2_2. Per-segment sub-questions:
+  - name_and_triggers (per_locale_list) — Per locale, 5-8 trigger phrases — words or short phrases that, if a staff member…
+  - structural_conditions (list_input) — What 2-5 structural conditions place someone in this segment?
+  - financial_position (long_text) — Describe this segment's financial position.
+  - stage_of_life (long_text) — Describe this segment's stage of life.
+  - primary_condition (long_text) — In one sentence: the single most important condition that defines this segment.
+  - core_problem (long_text) — What's this segment's core problem — the structural friction they're facing?
+  - drivers (list_input) — What 3–5 things drive their decisions?
+  - non_drivers (list_input) — What 3–5 things do NOT drive their decisions, that competitors might wrongly ass…
+  - system_fit (long_text) — What about your brand structure serves this segment specifically?
+  - why_segment_matters (long_text) — Why is this segment important to your business model — what do they unlock for y…
+
+---
+
+### Q2.4 — What conditions are true across all your segments? What do they all share, that …
+Type: list_input
+Tags: audience, common, boundary_check
+
+Prompt:
+  What conditions are true across all your segments? What do they all share, that distinguishes your overall audience from people who aren't your audience at all?
+
+Why this matters:
+  Defines the outer edge of your audience — the conditions a person must meet just to be in the audience at all, before segment-specific criteria narrow further.
+
+Orientative (guidance for the user):
+  These are the conditions that everyone in your audience meets, regardless of which specific segment they're in.
+
+List: 1–5 items, each ≤ 120 chars
+
+---
+
+### Q2.5 — Who is explicitly NOT your audience, even though they might superficially seem l…
+Type: structured_list
+Tags: audience, non_targets, boundary_check
+
+Prompt:
+  Who is explicitly NOT your audience, even though they might superficially seem like a fit? Name 3-5 non-target profiles and why each is excluded.
+
+Why this matters:
+  Named non-targets prevent the brand reasoning system from misclassifying lookalikes. Used as a boundary check at runtime.
+
+Orientative (guidance for the user):
+  These are people who look like they should be in your audience but aren't. Naming them explicitly prevents your brand reasoning system from misclassifying them.
+
+Structured list: 3–5 items, each item with fields:
+  - description (short_text) · required · max 150 chars
+  - reason_for_exclusion (long_text) · required · max 200 chars
+
+---
+
+### Q2.6 — What three conditions, when all met, lead your audience to actually commit (buy,…
+Type: multi_field_group
+Tags: audience, decision_thresholds, mandatory
+
+Prompt:
+  What three conditions, when all met, lead your audience to actually commit (buy, sign, decide)?
+
+Why this matters:
+  Used in proposal evaluation as criteria for whether a proposed change improves or impedes conversion.
+
+Orientative (guidance for the user):
+  Three thresholds: access (can they?), structure (does the offer's structure work for them?), confidence (do they trust it'll happen?). For any of your segments, what specifically constitutes each?
+
+Fields:
+  - access_condition ("Access condition") · required · max 200 chars
+  - structure_condition ("Structure condition") · required · max 200 chars
+  - confidence_condition ("Confidence condition") · required · max 200 chars
+
+---
+
+
+## Phase 3 — Pillars
+
+Populates 12_PILLARS.txt.
+Questions in this phase: 4
+
+### Q3.1 — How many distinct pillars does your brand have? Each pillar should be a separate…
+Type: pillar_setup
+Tags: pillars, count, mandatory
+
+Prompt:
+  How many distinct pillars does your brand have? Each pillar should be a separate mechanism by which your brand creates value. Typical range: 4-7 pillars.
+
+Why this matters:
+  Pillars are the building blocks of every analytical response and many content selections. Each pillar's mechanism + decision rules become the substrate the system reasons over.
+
+Orientative (guidance for the user):
+  Fewer than 4 pillars usually means the brand is under-articulated. More than 7 usually means duplication. Aim for distinct mechanisms — each pillar should be doing something different from the others.
+
+Pillar setup: 3–8 pillars. Captures pillar_count + pillars[].
+
+---
+
+### Q3.2 — Now describe each pillar in detail. Use the tabs above to switch between pillars…
+Type: pillar_loop
+Tags: pillars, per_pillar
+
+Prompt:
+  Now describe each pillar in detail. Use the tabs above to switch between pillars — fill out all sections for each one.
+
+Why this matters:
+  Each pillar's mechanism and decision rules drive proposal evaluation and content selection at runtime. The reject_when conditions are the most consequential — they're how the system identifies when a proposal contradicts a pillar.
+
+Orientative (guidance for the user):
+  Work through one pillar at a time. The 'reject_when' rules are the most important field — they tell the system when this pillar would do harm or fail. Be specific. 'When user needs exceed typology limits' is a real reject_when. 'When we don't feel like it' is not.
+
+Pillar loop: reads pillars from q3_1. Per-pillar sub-questions:
+  - problem (long_text) — What problem does this pillar specifically address — what's the inefficiency or …
+  - mechanism (long_text) — What's the mechanism — the specific thing your brand does that resolves that pro…
+  - accept_when (list_input) — When does this pillar's mechanism apply? Name 2-4 conditions under which using t…
+  - reject_when (list_input) — When does this pillar's mechanism NOT apply, even if it's available? Name 2-4 co…
+  - effect (short_text) — What's the effect when this pillar's mechanism is applied? What measurably chang…
+  - context_weights (slider_0_5) — For each context, how heavily does this pillar weigh in shaping content or analy…
+  - segment_modifiers (slider_pm2) — Does this pillar matter more or less for specific segments? Adjust by -2 to +2 p…
+
+---
+
+### Q3.3 — What tensions exist between your pillars? Name 2-4 pairs that genuinely pull in …
+Type: structured_list
+Tags: pillars, contradictions, trade_off_framing
+
+Prompt:
+  What tensions exist between your pillars? Name 2-4 pairs that genuinely pull in opposite directions, and how you resolve each tension.
+
+Why this matters:
+  Documented contradictions become explicit trade-off framings in analytical-mode evaluation. They acknowledge that no system is tension-free, and they tell the framework how to handle the tension when it arises.
+
+Orientative (guidance for the user):
+  If your pillars never tension with each other, they're probably not specific enough. Real systems have trade-offs. Naming them is honest and useful.
+
+Structured list: 1–5 items, each item with fields:
+  - tension (short_text) · required · max 100 chars
+  - interpretation (long_text) · required · max 250 chars
+  - resolution_rule (long_text) · required · max 250 chars
+
+---
+
+### Q3.4 — In one sentence: what's the single rule that resolves any pillar tension when no…
+Type: long_text
+Tags: pillars, system_principle, meta_rule, mandatory
+
+Prompt:
+  In one sentence: what's the single rule that resolves any pillar tension when no specific resolution applies?
+
+Why this matters:
+  Meta-rule. When the contradictions in Q3.3 don't cover a specific situation, the system principle is the tiebreaker.
+
+Orientative (guidance for the user):
+  This is the meta-rule. 'When in doubt, prioritize cost reduction.' 'When in doubt, prioritize customer trust.' 'When in doubt, prioritize the operational system over a one-off optimization.' One sentence.
+
+Field: system_principle (label: "System principle")
+  max 200 chars
+
+---
+
+
+## Phase 4 — Voice
+
+Populates 20_VOICE_CORE.txt + 21_VOICE_FLEX_[LOCALE].txt.
+Questions in this phase: 8
+
+### Q4.1 — How does your brand actually sound? Give us 3-5 descriptors that capture its ide…
+Type: list_input
+Tags: voice, identity, mandatory, competitor_test
+
+Prompt:
+  How does your brand actually sound? Give us 3-5 descriptors that capture its identity. Not adjectives like 'professional' or 'friendly' — descriptors with character.
+
+Why this matters:
+  Identity descriptors anchor every register. They're the highest-order signal the system uses when deciding how to phrase anything.
+
+Orientative (guidance for the user):
+  'Engineering-first', 'system-driven', 'operator mindset' — these have edge. 'Professional', 'approachable', 'modern' — these don't. If your descriptors could apply to any brand, push for sharper ones.
+
+List: 3–5 items, each ≤ 50 chars
+
+---
+
+### Q4.2 — What 4-6 adjectives describe the texture of your voice? These are more granular …
+Type: list_input
+Tags: voice, traits, mandatory
+
+Prompt:
+  What 4-6 adjectives describe the texture of your voice? These are more granular than identity — the qualities of how sentences feel.
+
+Why this matters:
+  Texture traits inform sentence-level decisions: rhythm, length, density. They translate identity into actual prose.
+
+Orientative (guidance for the user):
+  Texture traits: 'precise', 'controlled', 'rational', 'declarative'. Some brands lean 'rhythmic', 'lyrical', 'spacious'. Pick the 4–6 that describe how your sentences should feel to read.
+
+List: 4–6 items, each ≤ 40 chars
+
+---
+
+### Q4.3 — What's the single irreducible voice principle? If your team had to remember only…
+Type: long_text
+Tags: voice, core_rule, mandatory, meta_rule
+
+Prompt:
+  What's the single irreducible voice principle? If your team had to remember only one rule about how the brand talks, what would it be?
+
+Why this matters:
+  The meta-rule that resolves voice disagreements when nothing more specific applies. One sentence the team can recite.
+
+Orientative (guidance for the user):
+  'Explain systems, not emotions.' 'Lead with mechanism, never with promise.' 'Numbers before adjectives.' One sentence. This rule should resolve most voice disagreements.
+
+Field: core_rule (label: "Core rule")
+  max 200 chars
+
+---
+
+### Q4.4 — Beyond the universal AI-default blocklist we include automatically (words like '…
+Type: list_input
+Optional: yes
+Tags: voice, forbidden_phrases, brand_specific
+
+Prompt:
+  Beyond the universal AI-default blocklist we include automatically (words like 'innovative', 'cutting-edge', 'reimagine'), are there specific phrases your brand never uses?
+
+Why this matters:
+  Brand-specific forbidden phrases catch what universal blocklists miss — like a brand that's banned 'solution' in favor of 'system'.
+
+Orientative (guidance for the user):
+  These are brand-specific. Maybe you've banned 'solution' (you use 'system' instead) or 'partner' (you use 'client' or 'customer'). List anything specific to your brand.
+
+List: 0–15 items, each ≤ 60 chars
+
+---
+
+### Q4.5 — Are there formatting choices your brand has decided on? Em dashes vs commas, exc…
+Type: multi_field_select_group
+Tags: voice, formatting
+
+Prompt:
+  Are there formatting choices your brand has decided on? Em dashes vs commas, exclamation marks allowed or banned, all-caps for emphasis or never, etc.
+
+Why this matters:
+  Setting explicit rules removes the LLM's default variability on small formatting choices that, in aggregate, shape brand consistency.
+
+Orientative (guidance for the user):
+  Pick what you've actually decided. Most brands haven't — and the LLM will use whatever feels right by default. Setting explicit rules removes that variability.
+
+Multi-field select group:
+  - em_dashes ("Em dashes") → allow / forbid / undecided
+  - exclamation_marks ("Exclamation marks") → allow / forbid / undecided
+  - all_caps_emphasis ("ALL CAPS for emphasis") → allow / forbid / undecided
+  - oxford_comma ("Oxford comma") → use / omit / undecided
+  - heading_case ("Heading case") → sentence / title / lowercase / undecided
+  - emoji_policy ("Emoji policy (overall)") → allow / forbid / specific_channels_only / undecided
+
+---
+
+### Q4.6 — Show us what your brand sounds like in each register, in each locale. Write a 60…
+Type: per_locale_per_subkey
+Tags: voice, register_samples, per_locale, per_register, no_translation
+
+Prompt:
+  Show us what your brand sounds like in each register, in each locale. Write a 60-120 word sample piece that demonstrates the register. The topic can be anything within your brand's domain.
+
+Why this matters:
+  Register samples are the most influential anchors the system uses for voice. The 4 registers cover the full range from precise technical writing to accountable sensitive responses.
+
+Orientative (guidance for the user):
+  Native per locale — not translated. Each register has its own character: read the orientative box for the active register before writing.
+
+Per-locale × per-register. Field key: register_samples.
+  Sub-keys: precise, considered, conversational, accountable
+  min 60 words per cell
+  max 200 words per cell
+
+---
+
+### Q4.7 — When something goes wrong — delays, complaints, price changes, closures, refunds…
+Type: per_locale_per_subkey
+Tags: voice, sensitive_playbook, per_locale
+
+Prompt:
+  When something goes wrong — delays, complaints, price changes, closures, refunds — how does your brand handle each? Write a one-paragraph playbook per sensitive situation type, per locale.
+
+Why this matters:
+  Sensitive playbooks become the brand's accountable structure under pressure. The framework applies them when it detects a sensitive context.
+
+Orientative (guidance for the user):
+  Be specific about what your brand always includes (e.g., 'always state the cause', 'always commit to a new date'). 50–200 words per situation.
+
+Per-locale × per-situation. Field key: sensitive_playbook.
+  Sub-keys: delays, complaints, price_changes, closures, refunds
+  min 50 words per cell
+  max 200 words per cell
+
+---
+
+### Q4.8 — When someone asks your brand reasoning system about something outside your domai…
+Type: per_locale_per_subkey
+Tags: voice, off_domain, per_locale, per_register
+
+Prompt:
+  When someone asks your brand reasoning system about something outside your domain, how should it respond? Write a refusal template per register, per locale.
+
+Why this matters:
+  Off-domain templates fire when the topic is outside the brand's scope. Each register has its own version. Use the [BRAND_NAME] and [TOPIC] placeholders.
+
+Orientative (guidance for the user):
+  The off-domain template fires when the topic is outside your brand's scope. Each register has its own version — a precise refusal sounds different from a conversational one. Use the placeholders [BRAND_NAME], [SHORT_DEFINITION], and [TOPIC] where the system should substitute values.
+
+Per-locale × per-register. Field key: off_domain_templates.
+  Sub-keys: precise, considered, conversational, accountable
+  min 10 words per cell
+  max 80 words per cell
+  Required placeholders: [BRAND_NAME], [TOPIC]
+
+---
+
+
+## Phase 5 — Lexicon
+
+Populates 22_LEXICON_[LOCALE].txt.
+Questions in this phase: 4
+
+### Q5.1 — What 5-15 phrases does your brand own — phrases unique enough that when someone …
+Type: per_locale_structured_list
+Tags: lexicon, signature_phrases, per_locale, brand_owned
+
+Prompt:
+  What 5-15 phrases does your brand own — phrases unique enough that when someone reads them, they recognize you?
+
+Why this matters:
+  Signature phrases are the brand's most owned vocabulary. They show up as anchors in voice samples and high-recall content moments.
+
+Orientative (guidance for the user):
+  Signature phrases are recognizable. 'Cost does not surprise. It accumulates.' is signature — it's specific enough to belong to one brand. 'Quality and innovation' is not. If your phrase could appear in any brand's marketing, it's not signature.
+
+Per-locale list. Field key: signature_phrases.
+  Per locale: 5–15 items
+
+---
+
+### Q5.2 — What 10-20 X-not-Y vocabulary preferences does your brand have? Words you specif…
+Type: per_locale_structured_list
+Tags: lexicon, substitutions, per_locale
+
+Prompt:
+  What 10-20 X-not-Y vocabulary preferences does your brand have? Words you specifically use, instead of common alternatives.
+
+Why this matters:
+  Per-locale substitutions become hard rules in the lexicon file. The framework rewrites drafts to use the brand's preferred terms.
+
+Orientative (guidance for the user):
+  Example pairs: 'system not solution', 'mechanism not approach', 'client not customer', 'unit not home'. These are small choices, but consistency across them creates a recognizable lexicon.
+
+Per-locale structured_list. Field key: preferred_substitutions.
+  Per locale: 5–25 items
+  Item fields: use, instead_of
+
+---
+
+### Q5.3 — Any locale-specific punctuation or formatting preferences? Quotation marks ("" v…
+Type: multi_field_select_group
+Tags: lexicon, punctuation, per_locale
+
+Prompt:
+  Any locale-specific punctuation or formatting preferences? Quotation marks ("" vs «» vs „"), spacing conventions, list formatting, etc.
+
+Why this matters:
+  Different languages have different conventions. Setting your brand's choice now prevents the LLM from defaulting to the wrong locale's punctuation.
+
+Orientative (guidance for the user):
+  Different languages have different conventions. Portuguese uses «» quote marks in some contexts. Spanish uses inverted question marks. Specify your brand's choices.
+
+Multi-field select group:
+  - quotation_marks ("Quotation marks") → double / angle / german / mixed / other
+
+---
+
+### Q5.4 — Beyond the universal blocklist (English AI clichés) and the native AI defaults, …
+Type: per_locale_structured_list
+Optional: yes
+Tags: lexicon, blocklist, per_locale, brand_specific
+
+Prompt:
+  Beyond the universal blocklist (English AI clichés) and the native AI defaults, are there words or phrases specific to your brand or industry that you ban? Show each with an example of bad usage and a rewrite.
+
+Why this matters:
+  Industry-specific clichés (real estate 'luxury', tech 'frictionless') don't always trigger the universal blocklist. This is where the brand owner adds their own rules.
+
+Orientative (guidance for the user):
+  These are industry-specific or brand-specific clichés. In real estate: 'luxury', 'exclusive', 'discerning buyers'. In tech: 'frictionless', 'AI-powered', 'next-generation'. List what's specific to your context.
+
+Per-locale structured_list. Field key: brand_specific_blocklist.
+  Per locale: 0–30 items
+  Item fields: term, bad_example, why_it_fails, better_version
+
+---
+
+
+## Phase 6 — Channel specs
+
+Populates 30_CHANNEL_SPECS_[LOCALE].txt.
+Questions in this phase: 4
+
+### Q6.2 — Are there specific opening phrases your brand never uses?
+Type: per_locale_structured_list
+Optional: yes
+Tags: channels, forbidden_openers, per_locale
+
+Prompt:
+  Are there specific opening phrases your brand never uses?
+
+Why this matters:
+  Forbidden openers catch generic email/post starts that the LLM will reach for by default. Defining these locks the brand voice from sentence one.
+
+Orientative (guidance for the user):
+  Common ones to ban: 'Hi there!', 'Hope you're well', 'Just checking in', 'I hope this finds you well'. Add any specific to your brand.
+
+Per-locale list. Field key: forbidden_openers.
+  Per locale: 0–15 items
+
+---
+
+### Q6.3 — What's your hashtag policy for social channels?
+Type: multi_field_select_group
+Tags: channels, hashtags
+
+Prompt:
+  What's your hashtag policy for social channels?
+
+Why this matters:
+  Hashtag use is one of the highest-variance choices LLMs make. An explicit policy removes the guessing.
+
+Orientative (guidance for the user):
+  If you don't use hashtags at all on a channel, set 'never'. If they're optional, 'on_request'. If always, 'always'.
+
+Multi-field select group:
+  - instagram_enabled ("Instagram") → always / never / on_request
+  - linkedin_enabled ("LinkedIn") → always / never / on_request
+
+---
+
+### Q6.4 — What's your emoji policy?
+Type: multi_field_select_group
+Tags: channels, emoji
+
+Prompt:
+  What's your emoji policy?
+
+Why this matters:
+  Emoji norms vary wildly by brand. Setting per-channel rules removes the LLM's default behavior.
+
+Orientative (guidance for the user):
+  If your brand doesn't use emoji at all, set 'forbid' everywhere. If you allow them as conversation hooks but not in body copy, use 'allow_one_hook'.
+
+Multi-field select group:
+  - instagram ("Instagram") → forbid / allow_one_hook / allow_freely
+  - linkedin ("LinkedIn") → forbid / allow_one_hook / allow_freely
+  - email ("Email") → forbid / allow_subject_only / allow_freely
+  - internal ("Internal memos") → forbid / allow_freely
+
+---
+
+### Q6.6 — Any rules that apply across all your channels that we should make explicit?
+Type: list_input
+Optional: yes
+Tags: channels, cross_channel_rules
+
+Prompt:
+  Any rules that apply across all your channels that we should make explicit?
+
+Why this matters:
+  Cross-channel rules are the universals — things true everywhere your brand publishes. The framework applies them in every channel-aware draft.
+
+Orientative (guidance for the user):
+  Examples: 'Never use rhetorical questions as openers.' 'Numbers always specific, never rounded unless explicitly an estimate.' 'No "we" statements without a mechanism attached.'
+
+List: 0–10 items, each ≤ 150 chars
+
+---
+
+
+## Phase 7 — Examples
+
+Populates 31_EXAMPLES_LIBRARY_[LOCALE].txt.
+Questions in this phase: 2
+
+### Q7.1 — We recommend 30-45 examples per locale, spanning your primary channels. The syst…
+Type: select
+Tags: examples, commitment
+
+Prompt:
+  We recommend 30-45 examples per locale, spanning your primary channels. The system works without examples but produces more generic outputs. Investing 5-10 minutes per example pays off significantly. What's your commitment now?
+
+Why this matters:
+  Examples are the highest-leverage piece of content. Each example is a piece of finished, on-brand output that the system uses as a shape anchor. More examples = more accurate brand matching. Fewer = more reliance on rules alone.
+
+Orientative (guidance for the user):
+  Even 20 examples make a noticeable quality difference. If you can't commit to the full set now, you can add more after delivery — the file pack is editable.
+
+Select. Field key: example_commitment. Options:
+  - full_45 ("Full set (30–45 per locale)")
+  - minimum_20 ("Minimum (20 per locale)")
+  - skip_for_now ("Skip examples for now")
+
+---
+
+### Q7.2 — Add examples one at a time. Each is a finished output for a specific channel / s…
+Type: structured_list
+Optional: yes
+Tags: examples, per_example
+
+Prompt:
+  Add examples one at a time. Each is a finished output for a specific channel / segment / register combination — the gold-standard shape your brand reasoning system should match.
+
+Why this matters:
+  Each example anchors the system's content production for its channel + segment + register cell. The more cells you cover, the less the framework needs to generalize.
+
+Orientative (guidance for the user):
+  Target distribution per locale: 5–8 INSTAGRAM, 5–8 LINKEDIN, 5–8 EMAIL, 3 INVESTOR_MEMO, 3 TECHNICAL_DOC, 3–5 WEB_HERO, 2–3 PRESS_RELEASE, 2–3 INTERNAL_MEMO, 5 SENSITIVE, 3–5 analytical open questions, 3–5 proposal evaluations.
+
+Structured list: 0–60 items, each item with fields:
+  - locale (short_text) · required · max 5 chars
+  - channel (short_text) · required · max 40 chars
+  - segment (short_text) · required · max 40 chars
+  - register (short_text) · required · max 30 chars
+  - situation (short_text) · required · max 20 chars
+  - mode (short_text) · required · max 40 chars
+  - prompt (long_text) · required · max 300 chars
+  - pillars_invoked (short_text) · required · max 100 chars
+  - output (long_text) · required · max 2000 chars
+  - why_it_works (long_text) · required · max 500 chars
+  - common_traps_avoided (long_text) · max 400 chars
+
+---
+
