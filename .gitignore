@@ -10,9 +10,11 @@
 # Vercel
 .vercel
 
-# Claude / agent harness
-.claude/local-*
-.claude/sessions/
+# Claude / agent harness. settings.local.json caches every Bash
+# command Claude has been allowed to run, which can include literal
+# API keys from one-off curl tests. NEVER commit anything under
+# .claude/ unless you have audited it line by line.
+.claude/
 
 # Local env (per-package .gitignore handles app/.env.local already)
 .env
